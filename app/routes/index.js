@@ -1,7 +1,6 @@
 'use strict';
 
-var path = process.cwd();
-var ClickHandler = require(path + '/app/controllers/clickHandler.server.js');
+var path = require('path');
 
 module.exports = function (app, passport) {
 
@@ -9,49 +8,73 @@ module.exports = function (app, passport) {
 		if (req.isAuthenticated()) {
 			return next();
 		} else {
-			res.redirect('/login');
+			res.send(401);
 		}
 	}
 
-	var clickHandler = new ClickHandler();
-
-	app.route('/')
-		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/index.html');
+	app.get("/", function(req, res){
+		res.sendFile("index.html", { root: path.join(__dirname, '../../public') });
+	});
+	app.post('/register',function(req,res,next){
+		passport.authenticate('local-signup',{},function(err,user,info){
+			if(err) res.status(500).json({error: err});
+			if(!user)
+				res.status(401).json({error: info});
+			else{
+				res.status(200).json({error: false, data: user});
+			}
 		});
-
-	app.route('/login')
-		.get(function (req, res) {
-			res.sendFile(path + '/public/login.html');
+	});
+	app.post('/login',function(req,res,next){
+		passport.authenticate('local-login',{},function(err, user, info){
+			if(err)
+				res.status(500).json({error: err});
+			if(!user)
+				res.status(401).json({error: info});
+			else{
+				req.logIn(user, function(err){
+					if (err) {
+				       return res.status(500).json({err: 'Could not log in user'});
+				    }
+				    user.local.password = "";
+				    res.status(200).json({error: false, user: user});
+				});
+			}
 		});
+	});
 
-	app.route('/logout')
-		.get(function (req, res) {
+	app.post('/logout',function (req, res) {
 			req.logout();
-			res.redirect('/login');
+			res.status(200);
 		});
 
-	app.route('/profile')
+	//Query all poles from the authenticated user
+	app.route('/api/poles/')
 		.get(isLoggedIn, function (req, res) {
-			res.sendFile(path + '/public/profile.html');
+			res.json('');
 		});
 
-	app.route('/api/:id')
-		.get(isLoggedIn, function (req, res) {
-			res.json(req.user.github);
+	//Submit vote to pole
+	app.route('/api/poles/:id/vote')
+		.post(function (req, res) {
+			res.json('');
 		});
 
-	app.route('/auth/github')
-		.get(passport.authenticate('github'));
+	//Query data from pole
+	app.route('/api/poles/:id')
+		.get(function (req, res) {
+			res.json('');
+		})
+		.delete(function (req, res) {
+			res.json('');
+		})
+		.post(function (req, res) {
+			res.json('');
+		});
+	//Add new pole
+	app.route('/api/poles')
+		.post(function (req, res) {
+			res.json('');
+		});
 
-	app.route('/auth/github/callback')
-		.get(passport.authenticate('github', {
-			successRedirect: '/',
-			failureRedirect: '/login'
-		}));
-
-	app.route('/api/:id/clicks')
-		.get(isLoggedIn, clickHandler.getClicks)
-		.post(isLoggedIn, clickHandler.addClick)
-		.delete(isLoggedIn, clickHandler.resetClicks);
 };
