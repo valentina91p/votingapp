@@ -25,12 +25,15 @@ module.exports = function (passport) {
 				process.nextTick(function () {
 					User.findOne({ 'local.email': email }, function (err, user) {
 						if (err) {
+							console.log('an error ocurred');
 							return done(err);
 						}
 
 						if (user) {
+							console.log('there\'s already an user');
 							return done(null, false,"Email already in use.");
 						} else {
+							console.log('creating user');
 							var newUser = new User();
 
 							newUser.local.email = email;
@@ -41,6 +44,7 @@ module.exports = function (passport) {
 								if (err) {
 									return done(err);
 								}
+								newUser.local.password = ""; 
 								return done(null, newUser);
 							});
 						}
@@ -57,7 +61,7 @@ module.exports = function (passport) {
 				if(err)
 					return done(err);
 				if(!user || !user.validPassword(password))
-					return done(null, false, 'Email or password incorrect.');
+					return done(null, false, 'Incorrect email or password.');
 				else{
 					return done(null,user);
 				}
