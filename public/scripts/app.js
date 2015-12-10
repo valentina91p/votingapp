@@ -4,6 +4,7 @@
 	angular.module('VotingApp', [
         'ngRoute',
         'ngMessages',
+        'ngCookies',
         'controllers',
         'services'
     ]).config(['$routeProvider', function($routeProvider){
@@ -20,9 +21,37 @@
         }).when('/dashboard',{
     		templateUrl: './public/views/dashboard.html',
             controller: 'DashboardCtrl',
-            controllerAs: 'ctrl'
+            controllerAs: 'ctrl',
+            access: { requiresLogin: true }
     	}).otherwise({redirectTo:'/'});
-    }])
+    }]).run(['$rootScope','$location','$session',
+        function ($rootScope, $location, $session) {
+            $rootScope.$on('$routeChangeStart', function (event, next) {
+                if (next.access !== undefined) {
+                    if(!$session.isLoggedIn()){
+                        $location.path("/login");
+                    }
+                }
+            });
+        }]);
+    angular.module('VotingApp').controller('MainCtrl', ['$session','$rootScope', '$location',
+        function($session,$rootScope, $location){
+            var self = this;
+            self.current_user = $session.getUser();
+            console.log(self.current_user);
+            $rootScope.$on('login', function(event, args){
+                console.log("On login");
+                self.current_user = $session.getUser();
+            });
+            $rootScope.$on('logout', function(event,args){
+                self.logout();
+            });
+            self.logout = function(){
+                self.current_user = null;
+                $session.logout();
+                $location.url('/');
+            };
+        }]);
     angular.module('controllers',[]);
     angular.module('services',[]);
     angular.module('directives',[]);

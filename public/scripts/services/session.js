@@ -1,27 +1,38 @@
 angular.module('services')
-	.service('$session', ['$http',function($http){
+	.service('$session', ['$http','$cookies','$q','$rootScope',
+		function($http,$cookies,$q, $rootScope){
 		var session = {};
-		var user = null;
+		var user = undefined;
 		session.login = function(credentials){
-			return $http.post('/login',credentials);
+			return $q(function(resolve, reject){
+				$http.post('/login',credentials).then(function(resp){
+					user = resp.data.user;
+					$cookies.putObject('u',user);
+					$rootScope.$emit('login');
+					resolve(true);
+				},function(resp){
+					reject(resp.data.err);
+				});
+			});
 		}; 	
-		session.setUser = function(u) {
-			user = u;
+		session.getUser = function(){
+			if(!user)
+				user = $cookies.getObject('u');
+			return user;
 		};
 		session.logout = function(){
 			return $http.post('/logout')
 				.then(function(resp){
-					user = null;
+					user = undefined;
+					$cookies.remove('u');
 					return true;
-				}).then(function(resp){
-					return false;
 				});
 		};
 		session.register = function(user){
 			return $http.post('/register', user);
 		};
 		session.isLoggedIn = function(){
-			return user !== null;
+			return this.getUser() !== undefined;
 		};
 		return session;
 	}]);

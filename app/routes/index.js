@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path');
+var Poles = require('../models/poles');
 
 module.exports = function (app, passport) {
 
@@ -51,7 +52,13 @@ module.exports = function (app, passport) {
 	//Query all poles from the authenticated user
 	app.route('/api/poles/')
 		.get(isLoggedIn, function (req, res) {
-			res.json('');
+			console.log(req.user.id);
+			Poles.find({_owner: req.user.id},function(err, poles){
+				console.log(poles);
+				if(err)
+					res.status(500).json({err: err});
+				res.status(200).json({err: false, data: poles});
+			});
 		});
 
 	//Submit vote to pole

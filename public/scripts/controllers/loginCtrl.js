@@ -1,17 +1,15 @@
 angular.module('controllers')
-	.controller('LoginCtrl', ['$scope','$session','$location', 
+	.controller('LoginCtrl', ['$scope','$session','$location','$rootScope', 
 		function($scope, $session,$location){
 			var self = this;
 			self.credentials = {};
-			self.rememberme = false;
 			self.feedback = false;
 
-			self.login = function(credentials, rememberme){
-				var l = $session.login(credentials).then(function(resp){
-					$session.setUser(resp.data.user);
+			self.login = function(credentials){
+				$session.login(credentials).then(function(resp){
 					$location.url("/dashboard");
-				},function(resp){
-					self.feedback = resp.data.err;
+				},function(error){
+					self.feedback = error;
 				});
 			};
 			self.loginTwitter = function(){};
