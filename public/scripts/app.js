@@ -19,11 +19,21 @@
             controller: 'SignUpCtrl',
             controllerAs: 'ctrl'
         }).when('/dashboard',{
-    		templateUrl: './public/views/dashboard.html',
+            templateUrl: './public/views/dashboard.html',
             controller: 'DashboardCtrl',
             controllerAs: 'ctrl',
             access: { requiresLogin: true }
-    	}).otherwise({redirectTo:'/'});
+        }).when('/dashboard/poles/:id',{
+    		templateUrl: './public/views/details.html',
+            controller: 'PoleDetailsCtrl',
+            controllerAs: 'ctrl',
+            access: { requiresLogin: true }
+    	}).when('/dashboard/new',{
+            templateUrl: './public/views/new_pole.html',
+            controller: 'NewPoleCtrl',
+            controllerAs: 'ctrl',
+            access: { requiresLogin: true }
+        }).otherwise({redirectTo:'/'});
     }]).run(['$rootScope','$location','$session',
         function ($rootScope, $location, $session) {
             $rootScope.$on('$routeChangeStart', function (event, next) {

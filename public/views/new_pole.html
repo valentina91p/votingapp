@@ -1,0 +1,33 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<div ng-include src="'public/views/shared/menu.html'"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12 col-md-8 col-md-offset-2">
+			<div class="alert alert-error" ng-show="ctrl.msg_error">{{ctrl.msg_error}}</div>
+			<form name="newPole" novalidate>
+			  <div class="pole-question">
+			    <input type="text" class="form-control" ng-model="ctrl.pole.name" placeholder="What's your pole about?" required>
+			  </div>
+			  <div ng-repeat="opt in ctrl.pole.options track by $index">
+			  	<label ng-show="opt !== ctrl.editing" 
+			  		ng-dblclick="ctrl.editOption($event,opt)">{{opt.text}}</label>
+			  	<input ng-model="opt.text" ng-blur="ctrl.editing=null" ng-show="ctrl.editing === opt"></input>
+			  </div>
+			  <div class="pole-option pole-option-form">
+			    <input type="text" class="form-control" ng-model="ctrl.option" 
+			    	ng-keydown="$event.keyCode == 13 ? ctrl.addOption($event, ctrl.option) : null" placeholder="Add an option">
+			  </div>
+			  <div class="checkbox">
+			    <label>
+			      <input type="checkbox" value="1" ng-model="ctrl.pole.multichoice"> This pole is multichoice
+			    </label>
+			  </div>
+			  <button ng-click="newPole.$valid && ctrl.createPole(ctrl.pole)" 
+			  	class="btn btn-default">Create</button>
+			</form>
+		</div>
+	</div>
+</div>

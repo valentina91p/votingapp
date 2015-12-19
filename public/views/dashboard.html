@@ -6,7 +6,51 @@
 	</div>
 	<div class="row">
 		<div class="col-xs-12">
-			<a href='#new_pole' class="btn btn-default text-center">Create pole</a>
+			<a href='#dashboard/new' class="btn btn-default text-center">Create pole</a>
+		</div>
+	</div>
+	<br/>
+	{{ctrl.msg}}
+	<br/>
+	<div class="alert alert-info" ng-show="!ctrl.poles.length">You don't have any poles. <a href='#dashboard/new'>Create a new one</a></div>
+	<div class="row">
+		<div class="col-xs-12 col-sm-6 col-md-4" ng-repeat="pole in ctrl.poles">
+			<div class="panel panel-default">
+			  <div class="panel-body">
+			  	<div>
+			  		<span class="badge">{{ (pole.open) ? "Open":"Closed"}}</span>
+			  		<div class="dropdown pull-right">
+				    	<a href="javascript:void(0)" class=" dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+				    		<i class="glyphicon glyphicon-cog"></i></a>
+				    	<ul class="dropdown-menu">
+						    <li><a href="#/dashboard/poles/{{pole._id}}">See details</a></li>
+						    <li><a href="" ng-click="ctrl.selected=pole" data-toggle="modal" data-target="#myModal">Delete pole</a></li>
+						    <li><a href="" ng-click="ctrl.togglePole(pole)">
+						    	{{pole.open?"Close":"Reopen"}} pole</a></li>
+						</ul>
+				   	</div>
+			  	</div>
+			    <h4>{{pole.name}}</h4>
+			    Created on {{pole.createdAt | date:'fullDate'}}
+			  </div>
+			</div>
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      </div>
+      <div class="modal-body">
+        <p>Delete pole?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="ctrl.deletePole(ctrl.selected)" data-dismiss="modal">Absolutely</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Nope</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

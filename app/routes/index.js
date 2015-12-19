@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-var Poles = require('../models/poles');
+var Pole = require('../models/poles');
 
 module.exports = function (app, passport) {
 
@@ -52,12 +52,11 @@ module.exports = function (app, passport) {
 	//Query all poles from the authenticated user
 	app.route('/api/poles/')
 		.get(isLoggedIn, function (req, res) {
-			console.log(req.user.id);
-			Poles.find({_owner: req.user.id},function(err, poles){
+			Pole.find({_owner: req.user.id},function(err, poles){
 				console.log(poles);
 				if(err)
 					res.status(500).json({err: err});
-				res.status(200).json({err: false, data: poles});
+				res.status(200).json({err: false, poles: poles});
 			});
 		});
 
@@ -70,18 +69,43 @@ module.exports = function (app, passport) {
 	//Query data from pole
 	app.route('/api/poles/:id')
 		.get(function (req, res) {
-			res.json('');
+			Pole.find({_id: req.params.id},function(err,pole){
+				if(err)
+					res.status(500).json({err:err});
+				res.status(200).json({err:false,pole:pole});
+			})
 		})
 		.delete(isLoggedIn, function (req, res) {
-			res.json('');
+			Pole.remove({_id: req.params.id}, function(err){
+				if(err)
+					res.status(500).json({err: err});
+				res.status(200);
+			});
 		})
 		.post(isLoggedIn, function (req, res) {
-			res.json('');
+			console.log(req.params.id);
+			console.log(req.body.pole);
+			Pole.update({ _id: req.params.id }, req.body.pole, function(err){
+				console.log("after updating",err);
+				if(err)
+					res.status(500).json({err: err});
+				res.status(200);
+			});
 		});
 	//Add new pole
 	app.route('/api/poles')
 		.post(isLoggedIn,function (req, res) {
-			res.json('');
+			var  pole = new Pole();
+			pole.name = req.body.name;
+			pole.multichoice = req.body.multichoice;
+			pole.options = req.body.options;
+			pole._owner = req.user.id;
+			console.log(pole);
+			pole.save(function(err){
+				if(err)
+					res.status(500).json({err: err});
+				res.status(200).json({err: false, data: pole});
+			});
 		});
 
 };

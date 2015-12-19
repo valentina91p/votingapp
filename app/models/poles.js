@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var Poles = new Schema({
 	name: String,
     createdAt: {type: Date, default: Date.now},
-    open: Boolean,
+    open: {type: Boolean, default: true},
     multichoice: Boolean,
     options: [{
         text: String,

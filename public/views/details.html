@@ -1,0 +1,19 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<h2>{{ctrl.pole.name}}</h2>
+		</div>
+		<div class="col-xs-12 col-sm-6 col-md-7">
+			Total votes: {{ctrl.pole.total_votes}}<br>
+			<div class="option" ng-repeat="option in ctrl.pole.options">
+				<h5>{{option.text}} - {{option.votes}}  
+				<ng-pluralize count="option.votes"
+                when="{'1': 'vote.','other': 'votes.'}"></ng-pluralize></h5>
+                <div class="bar-bg">
+                	<div class="bar-inner" data-width="{{option.votes/(ctrl.pole.total_votes*1.0)*100}}"></div>
+                </div>
+			</div>
+		</div>
+		<div class="col-xs-12 col-sm-6 col-md-5"></div>
+	</div>
+</div>
